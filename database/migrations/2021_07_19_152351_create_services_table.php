@@ -17,6 +17,7 @@ class CreateServicesTable extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->tinyText('description')->nullable();
+            $table->string('image');
         });
     }
 

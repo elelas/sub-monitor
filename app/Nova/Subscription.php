@@ -12,6 +12,7 @@ use Laravel\Nova\Fields\Image;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Spatie\TagsField\Tags;
 
 class Subscription extends Resource
 {
@@ -68,6 +69,7 @@ class Subscription extends Resource
                     \App\Models\Subscription::YEAR_INTERVAL,
                 ]),
             Number::make('Сумма платежа', 'payment_amount')
+                ->step(0.01)
                 ->required(),
             Text::make('Валюта', 'currency_code')
                 ->suggestions([
@@ -79,7 +81,8 @@ class Subscription extends Resource
             Image::make('Изображение', 'image')->nullable(),
             BelongsTo::make('Сервис', 'service', Service::class)->nullable(),
             Boolean::make('Пролонгация', 'with_prolongation')->default(true),
-            BelongsTo::make('Пользователь', 'user', User::class)
+            BelongsTo::make('Пользователь', 'user', User::class),
+            Tags::make('Теги', 'tags')->multiple()
         ];
     }
 

@@ -1,0 +1,17 @@
+.auth {
+  &_card {
+    .button {
+      &.primary {
+        background-color: #FFB800;
+      }
+
+      &.gray {
+        background-color: #5F5F5F;
+      }
+
+      &.blue {
+        background-color: #1F91CC;
+      }
+    }
+  }
+}

@@ -4,7 +4,7 @@
 namespace App\Services\SmsService;
 
 
-use App\Exceptions\SmsServiceException;
+use App\Exceptions\SendSmsException;
 use Illuminate\Support\Facades\Http;
 
 class TelesignSmsSender implements ISmsSender
@@ -14,7 +14,7 @@ class TelesignSmsSender implements ISmsSender
         $url = sprintf(
             'https://telesign-telesign-send-sms-verification-code-v1.p.rapidapi.com/sms-verification-code?verifyCode=%s&phoneNumber=%s&appName=%s',
             $code,
-            $phoneNumber,
+            utils()->formatPhoneNumber($phoneNumber),
             urlencode(config('app.name'))
         );
 
@@ -28,7 +28,7 @@ class TelesignSmsSender implements ISmsSender
         $message = $response->json('message');
 
         if ($message != 'Message in progress') {
-            throw new SmsServiceException($phoneNumber, $code, $response->json('message', '-'));
+            throw new SendSmsException($phoneNumber, $code, $response->json('message', '-'));
         }
     }
 }

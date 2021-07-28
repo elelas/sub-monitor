@@ -4,9 +4,11 @@
 namespace App\Services\SmsService;
 
 
+use App\Exceptions\InvalidVerificationCodeException;
 use App\Models\SmsVerificationCode;
 use App\Services\VerificationCodeService\ICodeGenerator;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class SmsService implements ISmsService
 {
@@ -27,7 +29,7 @@ class SmsService implements ISmsService
     public function generateCodeAndSend(string $phoneNumber): string
     {
         return DB::transaction(function () use ($phoneNumber) {
-            $code = $this->codeGenerator->generateCodeForNumber($this->preparePhoneNumber($phoneNumber));
+            $code = $this->codeGenerator->generateCodeForNumber(utils()->formatPhoneNumber($phoneNumber));
 
             SmsVerificationCode::updateOrCreate([
                 'phone_number' => $phoneNumber,
@@ -41,27 +43,20 @@ class SmsService implements ISmsService
         });
     }
 
-    public function verifyCode(string $phoneNumber, string $code): bool
+    public function verifyCode(string $phoneNumber, string $code): void
     {
-        return DB::transaction(function () use ($phoneNumber, $code) {
-            $entity = SmsVerificationCode::wherePhoneNumber($this->preparePhoneNumber($phoneNumber))->first();
+        DB::transaction(function () use ($phoneNumber, $code) {
+            $entity = SmsVerificationCode::wherePhoneNumber(utils()->formatPhoneNumber($phoneNumber))->first();
 
             if (!$entity) {
-                return false;
+                throw new InvalidVerificationCodeException();
             }
 
             if ($entity->code !== $code) {
-                return false;
+                throw new InvalidVerificationCodeException();
             }
 
             $entity->delete();
-
-            return true;
         });
-    }
-
-    private function preparePhoneNumber(string $phoneNumber): string
-    {
-        return str_replace('+', '', str_replace('-', '', $phoneNumber));
     }
 }

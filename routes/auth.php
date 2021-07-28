@@ -66,7 +66,9 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->name('logout');
 
 Route::get('/auth', [AuthController::class, 'index'])
+    ->middleware('guest')
     ->name('auth.index');
 
 Route::get('/auth/phone', [PhoneController::class, 'index'])
+    ->middleware('guest')
     ->name('auth.phone');

@@ -39,7 +39,7 @@ return [
     |
     */
 
-    'debug' => (bool) env('APP_DEBUG', false),
+    'debug' => (bool)env('APP_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -178,6 +178,8 @@ return [
 
         App\Providers\RepositoriesServiceProvider::class,
         App\Providers\SmsVerificationCodeServiceProvider::class,
+        App\Providers\AppAuthServiceProvider::class,
+        App\Providers\UtilsServiceProvider::class,
     ],
 
     /*
@@ -231,7 +233,7 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-
+        'Utils' => \App\Facades\Utils::class,
     ],
 
 ];

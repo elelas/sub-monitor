@@ -4,7 +4,7 @@ namespace App\Exceptions;
 
 use Exception;
 
-class SmsServiceException extends Exception
+class SendSmsException extends Exception
 {
     public function __construct(string $phoneNumber, string $code, string $serviceResponseMessage)
     {

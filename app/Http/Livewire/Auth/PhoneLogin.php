@@ -2,27 +2,45 @@
 
 namespace App\Http\Livewire\Auth;
 
+use App\Exceptions\InvalidVerificationCodeException;
 use App\Jobs\SendVerificationSmsJob;
+use App\Repositories\UserRepository\IUserRepository;
 use App\Rules\PhoneNumberRule;
+use App\Services\AuthService\IAuthService;
 use App\Services\SmsService\ISmsService;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\App;
 use Livewire\Component;
 
 class PhoneLogin extends Component
 {
-    public string $phoneNumber = '+7-913-794-4814';
+    public string $phoneNumber = '';
     public string $code = '';
-    public bool $codeRequested = false;
+    public string $email = '';
+    public bool $showCodeForm = false;
     public ?Carbon $lastRequestedAt = null;
+    public bool $showEmailForm = false;
+    public int $timeoutInSeconds = 60;
+    public string $successRedirectRoute = 'dashboard';
 
-    protected function getRules()
+    public function mount()
+    {
+        if (App::isLocal()) {
+            $this->timeoutInSeconds = 3;
+            $this->phoneNumber = '+7-913-794-4814';
+        }
+    }
+
+    protected function getRules(): array
     {
         return [
             'phoneNumber' => ['required', new PhoneNumberRule()],
             'code' => 'required',
+            'email' => 'required|email',
         ];
     }
 
@@ -36,33 +54,47 @@ class PhoneLogin extends Component
         $this->validateOnly('phoneNumber');
 
         $this->lastRequestedAt = now();
-        $this->codeRequested = true;
+        $this->showCodeForm = true;
 
         dispatch(new SendVerificationSmsJob($this->phoneNumber, $smsService));
     }
 
-    public function verifyCode(ISmsService $smsService)
+    public function verifyCode(ISmsService $smsService, IUserRepository $userRepository)
     {
-        $this->validate();
+        $this->validateOnly('phoneNumber');
+        $this->validateOnly('code');
 
-        $result = $smsService->verifyCode($this->phoneNumber, $this->code);
+        try {
+            $smsService->verifyCode($this->phoneNumber, $this->code);
 
-        if (!$result) {
-            $this->addError('code', 'Некорректный код. Попробуйте еще раз запросить код.');
-        } else {
-            $this->redirectRoute('welcome');
+            if ($userRepository->findByPhone($this->phoneNumber)) {
+                $this->redirectRoute($this->successRedirectRoute);
+            } else {
+                $this->showEmailForm = true;
+            }
+        } catch (InvalidVerificationCodeException $exception) {
+            $this->addError('code', $exception->getMessage());
+        } catch (Exception $exception) {
+            session()->flash('criticalError', $exception->getMessage());
         }
     }
 
-    public function getNextTryingSecondsIntervalProperty(): float|int
+    public function registerEmailAndLogin(IAuthService $authService)
     {
+        $this->validate();
 
-        return 0;
+        $authService->registerAndLoginWithPhoneAndEmail($this->email, $this->phoneNumber);
+
+        $this->redirectRoute($this->successRedirectRoute);
+    }
+
+    public function getNextTryingSecondsIntervalProperty(): int
+    {
         if ($this->lastRequestedAt === null) {
             return 0;
         }
 
-        $controlTime = $this->lastRequestedAt->clone()->addMinute();
+        $controlTime = $this->lastRequestedAt->clone()->addSeconds($this->timeoutInSeconds);
 
         if ($controlTime->lessThan(now())) {
             return 0;

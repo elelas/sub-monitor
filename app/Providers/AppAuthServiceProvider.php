@@ -2,18 +2,18 @@
 
 namespace App\Providers;
 
-use App\Repositories\UserRepository\IUserRepository;
-use App\Repositories\UserRepository\UserRepository;
+use App\Services\AuthService\AuthService;
+use App\Services\AuthService\IAuthService;
 use Illuminate\Support\ServiceProvider;
 
-class RepositoriesServiceProvider extends ServiceProvider
+class AppAuthServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
      */
     public function register()
     {
-        $this->app->singleton(IUserRepository::class, UserRepository::class);
+        $this->app->singleton(IAuthService::class, AuthService::class);
     }
 
     /**
@@ -21,5 +21,6 @@ class RepositoriesServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        //
     }
 }

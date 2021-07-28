@@ -24,4 +24,6 @@ interface IAuthService
      * @throws ValidationException
      */
     public function loginByEmail(string $email, string $password): User;
+
+    public function loginWithUser(User $user): User;
 }

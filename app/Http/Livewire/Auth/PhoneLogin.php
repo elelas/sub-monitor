@@ -59,7 +59,7 @@ class PhoneLogin extends Component
         dispatch(new SendVerificationSmsJob($this->phoneNumber, $smsService));
     }
 
-    public function verifyCode(ISmsService $smsService, IUserRepository $userRepository)
+    public function verifyCode(ISmsService $smsService, IUserRepository $userRepository, IAuthService $authService)
     {
         $this->validateOnly('phoneNumber');
         $this->validateOnly('code');
@@ -67,8 +67,10 @@ class PhoneLogin extends Component
         try {
             $smsService->verifyCode($this->phoneNumber, $this->code);
 
-            if ($userRepository->findByPhone($this->phoneNumber)) {
-                $this->redirectRoute(RouteServiceProvider::HOME);
+            if ($user = $userRepository->findByPhone($this->phoneNumber)) {
+                $authService->loginWithUser($user);
+
+                $this->redirect(RouteServiceProvider::HOME);
             } else {
                 $this->showEmailForm = true;
             }

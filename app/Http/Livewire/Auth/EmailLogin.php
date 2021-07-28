@@ -6,7 +6,6 @@ use App\Providers\RouteServiceProvider;
 use App\Services\AuthService\IAuthService;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
-use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 
 class EmailLogin extends Component

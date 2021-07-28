@@ -11,4 +11,14 @@ class AuthController extends Controller
     {
         return view('auth.index');
     }
+
+    public function email()
+    {
+        return view('auth.email');
+    }
+
+    public function phone()
+    {
+        return view('auth.phone');
+    }
 }

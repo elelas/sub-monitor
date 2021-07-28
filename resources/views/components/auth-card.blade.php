@@ -1,8 +1,8 @@
-<div class="min-vh-100 d-flex flex-column">
+<div style="display: flex; flex-direction: column">
     <a href="{{ route('auth.phone') }}">
         Войти через телефон
     </a>
-    <a href="">
+    <a href="{{ route('auth.email') }}">
         Войти через Email
     </a>
     <a href="">

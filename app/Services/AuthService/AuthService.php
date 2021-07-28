@@ -7,9 +7,12 @@ namespace App\Services\AuthService;
 use App\Models\User;
 use App\Repositories\UserRepository\IUserRepository;
 use App\Rules\PhoneNumberRule;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class AuthService implements IAuthService
 {
@@ -39,5 +42,18 @@ class AuthService implements IAuthService
         auth()->login($user, true);
 
         return $user;
+    }
+
+    public function loginByEmail(string $email, string $password): User
+    {
+        $result = Auth::attempt(['email' => $email, 'password' => 'password']);
+
+        if ($result) {
+            return Auth::user();
+        }
+
+        throw ValidationException::withMessages([
+            'email' => 'Некорректный email или пароль',
+        ]);
     }
 }

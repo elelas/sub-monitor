@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Auth;
 
 use App\Exceptions\InvalidVerificationCodeException;
 use App\Jobs\SendVerificationSmsJob;
+use App\Providers\RouteServiceProvider;
 use App\Repositories\UserRepository\IUserRepository;
 use App\Rules\PhoneNumberRule;
 use App\Services\AuthService\IAuthService;
@@ -25,7 +26,6 @@ class PhoneLogin extends Component
     public ?Carbon $lastRequestedAt = null;
     public bool $showEmailForm = false;
     public int $timeoutInSeconds = 60;
-    public string $successRedirectRoute = 'dashboard';
 
     public function mount()
     {
@@ -68,7 +68,7 @@ class PhoneLogin extends Component
             $smsService->verifyCode($this->phoneNumber, $this->code);
 
             if ($userRepository->findByPhone($this->phoneNumber)) {
-                $this->redirectRoute($this->successRedirectRoute);
+                $this->redirectRoute(RouteServiceProvider::HOME);
             } else {
                 $this->showEmailForm = true;
             }
@@ -85,7 +85,7 @@ class PhoneLogin extends Component
 
         $authService->registerAndLoginWithPhoneAndEmail($this->email, $this->phoneNumber);
 
-        $this->redirectRoute($this->successRedirectRoute);
+        $this->redirectRoute(RouteServiceProvider::HOME);
     }
 
     public function getNextTryingSecondsIntervalProperty(): int

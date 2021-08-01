@@ -21,7 +21,7 @@
     @enderror
 
     <div style="margin: 10px 0">
-      <a href="">
+      <a href="{{ route('password.request') }}">
         Забыли пароль?
       </a>
     </div>

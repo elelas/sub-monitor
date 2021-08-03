@@ -87,7 +87,7 @@ class PhoneLogin extends Component
 
         $authService->registerAndLoginWithPhoneAndEmail($this->email, $this->phoneNumber);
 
-        $this->redirectRoute(RouteServiceProvider::HOME);
+        $this->redirect(RouteServiceProvider::HOME);
     }
 
     public function getNextTryingSecondsIntervalProperty(): int

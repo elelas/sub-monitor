@@ -45,7 +45,7 @@ class AuthService implements IAuthService
 
     public function loginByEmail(string $email, string $password): User
     {
-        $result = Auth::attempt(['email' => $email, 'password' => 'password']);
+        $result = Auth::attempt(['email' => $email, 'password' => $password]);
 
         if ($result) {
             return Auth::user();

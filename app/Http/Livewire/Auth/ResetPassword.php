@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Auth;
 
+use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -38,11 +39,12 @@ class ResetPassword extends Component
             [
                 'email' => $this->email,
                 'token' => $this->token,
-                'password' => $this->password
+                'password' => $this->password,
+                'password_confirmation' => $this->password_confirmation
             ],
             function ($user) {
                 $user->forceFill([
-                    'password' => Hash::make(request()->get('password')),
+                    'password' => Hash::make($this->password),
                     'remember_token' => Str::random(60),
                 ])->save();
 
@@ -51,7 +53,7 @@ class ResetPassword extends Component
         );
 
         if ($status === \Illuminate\Support\Facades\Password::PASSWORD_RESET) {
-            $this->redirectRoute('welcome');
+            $this->redirect(RouteServiceProvider::HOME);
         } else {
             $this->addError('email', (string)__($status));
         }

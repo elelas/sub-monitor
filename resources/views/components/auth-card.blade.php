@@ -5,7 +5,7 @@
     <a href="{{ route('login.email') }}">
         Войти через Email
     </a>
-    <a href="">
+    <a href="{{ route('login.socialite.google') }}">
         Войти через Google
     </a>
 </div>

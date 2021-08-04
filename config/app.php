@@ -166,6 +166,8 @@ return [
          * Package Service Providers...
          */
 
+        \SocialiteProviders\Manager\ServiceProvider::class,
+
         /*
          * Application Service Providers...
          */

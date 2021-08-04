@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -43,4 +44,13 @@ Route::prefix('auth')->group(function () {
     Route::get('/', [AuthController::class, 'index'])
         ->middleware('guest')
         ->name('auth.index');
+
+    Route::prefix('socialite')->group(function () {
+        Route::get('google', [GoogleController::class, 'index'])
+        ->name('login.socialite.google');
+    });
+
+    Route::prefix('callback')->group(function () {
+        Route::get('google', [GoogleController::class, 'callback']);
+    });
 });

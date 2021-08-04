@@ -37,6 +37,7 @@ class SmsService implements ISmsService
                 'code' => $code,
             ]);
 
+            // todo Заменить реализацию на нотификацию
             $this->smsSender->send($phoneNumber, $code);
 
             return $code;

@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\AuthenticationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -10,6 +10,15 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
+    Route::prefix('login')->group(function () {
+        Route::get('/', [AuthenticationController::class, 'showLoginPage'])
+            ->name('auth.login-form');
+
+        Route::post('/', [AuthenticationController::class, 'loginViaEmail'])
+            ->middleware('throttle:login')
+            ->name('auth.login-via-email');
+    });
+
     Route::get('/register', [RegisteredUserController::class, 'create'])
         ->middleware('guest')
         ->name('register');
@@ -33,21 +42,9 @@ Route::prefix('auth')->group(function () {
         ->middleware(['auth', 'signed', 'throttle:6,1'])
         ->name('verification.verify');
 
-    Route::get('/login/phone', [AuthController::class, 'phone'])
-        ->middleware('guest')
-        ->name('login.phone');
-
-    Route::get('/login/email', [AuthController::class, 'email'])
-        ->middleware('guest')
-        ->name('login.email');
-
-    Route::get('/', [AuthController::class, 'index'])
-        ->middleware('guest')
-        ->name('auth.index');
-
     Route::prefix('socialite')->group(function () {
         Route::get('google', [GoogleController::class, 'index'])
-        ->name('login.socialite.google');
+            ->name('login.socialite.google');
     });
 
     Route::prefix('callback')->group(function () {

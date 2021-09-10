@@ -181,7 +181,6 @@ return [
         App\Providers\RepositoriesServiceProvider::class,
         App\Providers\SmsVerificationCodeServiceProvider::class,
         App\Providers\AppAuthServiceProvider::class,
-        App\Providers\UtilsServiceProvider::class,
     ],
 
     /*

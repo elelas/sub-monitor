@@ -1,3 +1,3 @@
-<x-guest-layout>
-  <livewire:auth.verify-email/>
-</x-guest-layout>
+<button>
+  Send verification link
+</button>

@@ -1,12 +1,10 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticationController;
-use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\GoogleController;
-use App\Http\Controllers\Auth\NewPasswordController;
-use App\Http\Controllers\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Auth\RegistrationController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\VerificationEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -19,28 +17,45 @@ Route::prefix('auth')->group(function () {
             ->name('auth.login-via-email');
     });
 
-    Route::get('/register', [RegisteredUserController::class, 'create'])
-        ->middleware('guest')
-        ->name('register');
+    Route::prefix('verification-email')->group(function () {
+        Route::get('/', [VerificationEmailController::class, 'showPageWithSendButton'])
+            ->name('verification-email.index');
 
-    Route::post('/register', [RegisteredUserController::class, 'store'])
-        ->middleware('guest');
+        Route::get('verify', [VerificationEmailController::class, 'verifyEmail'])
+            ->middleware('signed')
+            ->name('verification-email.verify');
 
-    Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])
-        ->middleware('guest')
-        ->name('password.request');
+        Route::post('send', [VerificationEmailController::class, 'sendVerificationLink'])
+            ->name('verification-email.send-link');
+    });
 
-    Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])
-        ->middleware('guest')
-        ->name('password.reset');
+    Route::prefix('registration')->group(function () {
+        Route::get('/', [RegistrationController::class, 'showPageWithForm'])
+            ->middleware('guest')
+            ->name('registration.index');
 
-    Route::get('/verify-email', [EmailVerificationPromptController::class, '__invoke'])
-        ->middleware('auth')
-        ->name('verification.notice');
+        Route::post('/', [RegistrationController::class, 'createNewUser'])
+            ->middleware('guest')
+            ->name('registration.create');
+    });
 
-    Route::get('/verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
-        ->middleware(['auth', 'signed', 'throttle:6,1'])
-        ->name('verification.verify');
+    Route::prefix('reset-password')->group(function () {
+        Route::get('/', [ResetPasswordController::class, 'showPageWithEmailForm'])
+            ->middleware('guest')
+            ->name('reset-password.forgot');
+
+        Route::post('/', [ResetPasswordController::class, 'sendResetLink'])
+            ->middleware('guest')
+            ->name('reset-password.send-link');
+
+        Route::get('/new-password', [ResetPasswordController::class, 'showPageWithResetForm'])
+            ->middleware('guest')
+            ->name('password.reset');
+
+        Route::post('/new-password', [ResetPasswordController::class, 'saveNewPassword'])
+            ->name('reset-password.save-new-password');
+    });
+
 
     Route::prefix('socialite')->group(function () {
         Route::get('google', [GoogleController::class, 'index'])

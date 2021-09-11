@@ -10,6 +10,8 @@ use Laravel\Socialite\Contracts\User as SocialiteUser;
 
 interface IUserRepository
 {
+    // todo Use https://github.com/andersao/l5-repository
+
     public function findByPhone(string $phone): ?User;
 
     public function save(User $user): User;

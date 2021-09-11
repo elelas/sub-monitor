@@ -21,6 +21,8 @@ class AuthenticationController extends Controller
 
     public function loginViaEmail(Request $request): Redirector|Application|RedirectResponse
     {
+        // todo Use \App\Services\AuthService\AuthService
+
         $request->validate([
             'email'    => 'required|email|exists:users',
             'password' => 'required'

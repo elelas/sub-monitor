@@ -11,7 +11,6 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class VerificationEmailController extends Controller
 {
